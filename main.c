@@ -1,13 +1,14 @@
 #include "include/telebot.h"
+#include "include/get_next_line.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "../gnl/get_next_line.h"
 # define SIZE_OF_ARRAY(array) (sizeof(array) / sizeof(array[0]))
 # define token "1452987339:AAFAIrbzKsnAVdQDhiJkCZs7irwpyMvS0Xc"
 
 char *active();
+char *change_link(char *link);
 
 typedef enum
 {
@@ -31,11 +32,9 @@ if (telebot_get_me(handle, &me) != TELEBOT_ERROR_NONE)
 		telebot_destroy(handle);
 		exit (-1);
 	}
-printf("ID: %d\n", me.id);
-printf("First Name: %s\n", me.first_name);
-printf("User Name: %s\n", me.username);
 
 telebot_put_me(&me);
+
 int index, count, offset = -1;
 telebot_error_e ret;
 telebot_message_t message;
@@ -49,6 +48,8 @@ telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
 		for (index = 0; index < count; index++)
         {
             message = updates[index].message;
+			
+			
 			char str[4096];
 			if (strcmp(message.from->username, "telega_gaga") != 0)
 			{
@@ -81,6 +82,7 @@ telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
 /*active_user*/			if (strcmp(message.text, "/active") == 0 && mode != add_user)
 						{
 							char *text = active();
+							char *reply = "{\"keyboard\":[[{\"text\":\"button 1\"},{\"text\":\"button 2\"}]],\"resize_keyboard\":true}";
 							if (text != NULL)
 							{
 							ret = telebot_send_message(handle, message.chat->id, text, "HTML", false, false, 0, "");
@@ -121,12 +123,17 @@ telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
 								if (ret != TELEBOT_ERROR_NONE)
 							printf("Error in sending message");
 							char file_name[100];
+							char path[100];
+							sprintf(path, "95.163.182.122/%s.ovpn", message.text);
 							sprintf(file_name, "/vpn_clients/%s.ovpn", message.text);
+							char *res = change_link(path);
 							
-								ret = telebot_send_document(handle, message.chat->id, file_name, true, NULL, "", NULL, false, 0, "");
+								ret = telebot_send_document(handle, message.chat->id, file_name, true, NULL, res, "HTML", false, 0, "");
+							setenv("client", "", 1);
 								if (ret != TELEBOT_ERROR_NONE)
 							printf("Error in sending message");
 								mode = none;
+								free(res);
 							}		
 						}
 					}
@@ -135,31 +142,7 @@ telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
 					continue;
 
 			}
-            // if (message.text)
-            // {
-            //     printf("%s: %s \n", message.from->first_name, message.text);
-            //     if (strstr(message.text, "/dice"))
-            //     {
-            //         telebot_send_dice(handle, message.chat->id, false, 0, "");
-            //     }
-            //     else
-            //     {
-                
-            //         if (strstr(message.text, "/start"))
-            //         {
-            //             snprintf(str, SIZE_OF_ARRAY(str), "Hello %s", message.from->first_name);
-            //         }
-            //         else
-            //         {
-            //             snprintf(str, SIZE_OF_ARRAY(str), "<i>%s</i>", message.text);
-            //         }
-            //         ret = telebot_send_message(handle, message.chat->id, str, "HTML", false, false, updates[index].message.message_id, "");
-            //     }
-            //     if (ret != TELEBOT_ERROR_NONE)
-            //     {
-            //         printf("Failed to send message: %d \n", ret);
-            //     }
-            // }
+         
             
         }
         telebot_put_updates(updates, count);
