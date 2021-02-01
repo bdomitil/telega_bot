@@ -1,4 +1,4 @@
-files.c = src/active_users.c src/linker.c main.c
+files.c = src/linker.c src/reply_markup.c src/active_users.c src/utils.c src/commands.c main.c 
 
 files.o = $(files.c:.c=.o)
 
@@ -10,10 +10,10 @@ NAME = telega_bot
 all :	$(NAME)
 
 $(NAME) :  $(files.o)
-			$(CC)  $(files.o) gnl.a libtelebot.so -o $(NAME) -lcurl
+			$(CC)  -g $(files.o) include/gnl.a include/libft.a include/libtelebot.so -o $(NAME) -lcurl
 			
 %.o : %.c 
-			@gcc  -c  $<  -o $@ 
+			@gcc  -g -c  $<  -o $@ 
 			@echo "\033[36m$<\033[0m \033[35m is compiled!\033[0m"
 
 re : 		fclean $(NAME)

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../include/get_next_line.h"
 
-char *active()
+char *get_active_user()
 {
 	int fd = open("/etc/openvpn/server/openvpn-status.log",O_RDONLY);
 		char *to_ret = NULL;
